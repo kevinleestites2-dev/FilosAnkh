@@ -1,0 +1,23 @@
+{
+  "name": "filos-ankh",
+  "version": "1.0.0",
+  "description": "FilosAnkh — The Partner. The Coder. LightAgent-powered sovereign AI.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "voice": "node src/index.js --voice",
+    "install:piper": "bash scripts/install_piper.sh",
+    "install:lightagent": "pip3 install LightAgent openai-whisper",
+    "setup": "npm install && npm run install:lightagent"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.3",
+    "dotenv": "^16.4.5",
+    "node-fetch": "^2.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["filos", "ankh", "pantheon", "lightagent", "ai", "assistant"],
+  "license": "MIT"
+}
