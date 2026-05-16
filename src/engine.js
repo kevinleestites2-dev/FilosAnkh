@@ -68,7 +68,7 @@ async function runLightAgent(userMessage, history) {
 
   const result = execSync(
     `python3 "${BRIDGE_PY}" '${escaped}'`,
-    { encoding: 'utf8', timeout: 60000 }
+    { encoding: 'utf8', timeout: 5000 }
   );
 
   const parsed = JSON.parse(result.trim());
@@ -180,25 +180,20 @@ async function runGemini(userMessage, history) {
 
 async function run(userMessage, history) {
   const cfg = config.load();
-  const mode = cfg.mode || 'smart';
+  const mode = cfg.mode || 'fast'; // PATCHED: default to Gemini when Ollama offline
+
+  // PATCHED: Skip Ollama entirely if mode is fast, go straight to Gemini
+  if (mode === 'fast') {
+    console.log('[filos:engine] Fast mode — routing directly to Gemini');
+    return await runGemini(userMessage, history);
+  }
 
   // Try LightAgent first (smart mode)
   if (mode === 'smart') {
     try {
       return await runLightAgent(userMessage, history);
     } catch (err) {
-      console.error('[filos:engine] LightAgent failed, falling back to direct:', err.message);
-      // Fall through to direct
-    }
-  }
-
-  // Direct Ollama API
-  if (cfg.ollamaBaseUrl) {
-    try {
-      return await runDirect(userMessage, history);
-    } catch (err) {
-      console.error('[filos:engine] Direct Ollama failed, falling back to Gemini:', err.message);
-      // Fall through to Gemini
+      console.error('[filos:engine] LightAgent failed, falling back to Gemini:', err.message);
     }
   }
 
